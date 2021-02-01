@@ -71,4 +71,157 @@ router.post(
   }
 )
 
+// @route   GET /api/participants
+// @desc    Get all participants
+// @acess   Public
+router.get('/', async (req, res) => {
+  try {
+    const participants = await Participant.find().sort({ country: 1 })
+
+    if (participants.length < 1) {
+      return res.status(400).json({ msg: 'No participants found' })
+    }
+
+    res.json(participants)
+  } catch (err) {
+    console.error(err.message)
+    res.status(500).send('Server Error')
+  }
+})
+
+// @route   GET /api/participants/:id
+// @desc    Get single participants
+// @acess   Public
+router.get('/:id', async (req, res) => {
+  try {
+    const participant = await Participant.findById(req.params.id)
+
+    if (!participant) {
+      return res.status(400).json({ msg: 'Participants found' })
+    }
+
+    res.json(participant)
+  } catch (err) {
+    if (err.kind == 'ObjectId') {
+      return res.status(400).json({ msg: 'Participant not found' })
+    }
+    console.error(err.message)
+    res.status(500).send('Server Error')
+  }
+})
+
+// @route   PUT /api/participants/:id
+// @desc    Update a participant
+// @acess   Private
+router.put(
+  '/:id',
+  [
+    auth,
+    [
+      check('country', 'Country is required').not().isEmpty(),
+      check('artist', 'Artist name is required').not().isEmpty(),
+      check('song', 'Song is required').not().isEmpty(),
+      check('semifinal', 'Semifinal is required').not().isEmpty(),
+    ],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() })
+    }
+
+    const country = await Country.findOne({
+      name: req.body.country,
+    })
+
+    if (!country) {
+      return res.status(400).json({ msg: 'Country not found' })
+    }
+
+    const {
+      artist,
+      song,
+      image,
+      bio,
+      writtenBy,
+      composedBy,
+      semifinal,
+      final,
+      video,
+      points,
+    } = req.body
+
+    const participantFields = {}
+    participantFields.country = {
+      name: country.name,
+      code: country.code,
+      flag: country.flag,
+    }
+    if (artist) participantFields.artist = artist
+    if (song) participantFields.song = song
+    if (image) participantFields.image = image
+    if (bio) participantFields.bio = bio
+    if (writtenBy) participantFields.writtenBy = writtenBy
+    if (composedBy) participantFields.composedBy = composedBy
+    if (semifinal) participantFields.semifinal = semifinal
+    if (final) participantFields.final = final
+    if (video) participantFields.video = video
+    if (points) participantFields.points = points
+
+    try {
+      let participant = await Participant.findById(req.params.id)
+      if (!participant) {
+        res.status(400).json({ msg: 'Participant not found' })
+      }
+
+      // Check if user is authorized
+      const user = await User.findById(req.user.id).select('-password')
+      if (user.role !== 'admin') {
+        return res
+          .status(400)
+          .json({ errors: [{ msg: 'User not authorized' }] })
+      }
+
+      // Update the new participant
+      participant = await Participant.findByIdAndUpdate(
+        { _id: req.params.id },
+        { $set: participantFields },
+        { new: true }
+      )
+      return res.json(participant)
+    } catch (err) {
+      if (err.kind == 'ObjectId') {
+        return res.status(400).json({ msg: 'Participant not found' })
+      }
+      console.error(err.message)
+      res.status(500).send('Server Error')
+    }
+  }
+)
+
+// @route   DELETE /api/participants/:id
+// @desc    Delete a participant
+// @acess   Private
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    const participant = await Participant.findById(req.params.id)
+    if (!participant) {
+      res.status(400).json({ msg: 'Participant not found' })
+    }
+    // Check if user is authorized
+    const user = await User.findById(req.user.id).select('-password')
+    if (user.role !== 'admin') {
+      return res.status(400).json({ errors: [{ msg: 'User not authorized' }] })
+    }
+
+    await participant.remove()
+    res.json({ msg: 'Participant deleted' })
+  } catch (err) {
+    if (err.kind == 'ObjectId') {
+      return res.status(400).json({ msg: 'Participant not found' })
+    }
+    res.status(500).send('Server Error')
+  }
+})
+
 module.exports = router
