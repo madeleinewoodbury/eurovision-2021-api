@@ -1,0 +1,57 @@
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
+
+const ParticipantSchema = new Schema({
+  country: {
+    type: Schema.Types.ObjectId,
+    ref: 'countries',
+  },
+  artist: {
+    type: String,
+    required: true,
+  },
+  song: {
+    type: String,
+    required: true,
+  },
+  image: {
+    type: String,
+  },
+  bio: {
+    type: String,
+  },
+  writtenBy: {
+    type: String,
+  },
+  composedBy: {
+    type: String,
+  },
+  semifinal: {
+    type: String,
+    required: true,
+  },
+  final: {
+    type: Boolean,
+    default: false,
+  },
+  video: {
+    type: String,
+  },
+  points: {
+    type: Number,
+    default: 0,
+  },
+  votes: [
+    {
+      user: {
+        type: Schema.Types.ObjectId,
+        ref: 'users',
+      },
+      vote: {
+        type: Number,
+      },
+    },
+  ],
+})
+
+module.exports = Participant = mongoose.model('participant', ParticipantSchema)
