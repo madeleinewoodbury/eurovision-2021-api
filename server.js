@@ -3,6 +3,7 @@ const dotenv = require('dotenv')
 const cors = require('cors')
 const morgan = require('morgan')
 const colors = require('colors')
+
 const connectDB = require('./config/db')
 
 // Load env variables

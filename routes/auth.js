@@ -15,7 +15,7 @@ router.get('/', auth, async (req, res) => {
     res.json(user)
   } catch (err) {
     console.log(err.message)
-    res.status(500).sen('Sever Error')
+    res.status(500).send('Sever Error')
   }
 })
 
@@ -65,7 +65,13 @@ router.post(
         { expiresIn: process.env.JWT_EXPIRE },
         (err, token) => {
           if (err) throw err
-          res.json({ token })
+          res.json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            isAdmin: user.role === 'admin',
+            token: token,
+          })
         }
       )
     } catch (err) {
