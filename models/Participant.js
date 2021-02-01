@@ -3,8 +3,17 @@ const Schema = mongoose.Schema
 
 const ParticipantSchema = new Schema({
   country: {
-    type: Schema.Types.ObjectId,
-    ref: 'countries',
+    name: {
+      type: String,
+      required: true,
+    },
+    code: {
+      type: String,
+      required: true,
+    },
+    flag: {
+      type: String,
+    },
   },
   artist: {
     type: String,
