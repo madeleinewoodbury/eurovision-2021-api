@@ -52,7 +52,13 @@ router.post(
         { expiresIn: process.env.JWT_EXPIRE },
         (err, token) => {
           if (err) throw err
-          res.json({ token })
+          res.json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            isAdmin: user.role === 'admin',
+            token: token,
+          })
         }
       )
     } catch (err) {
