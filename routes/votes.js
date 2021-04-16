@@ -42,6 +42,7 @@ router.post('/:id/:vote', [auth], async (req, res) => {
     // Create a new vote for the user
     const newUserVote = {
       participant: {
+        id: participant._id,
         country: participant.country.name,
         flag: participant.country.flag,
         artist: participant.artist,

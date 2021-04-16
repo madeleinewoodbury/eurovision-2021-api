@@ -23,6 +23,7 @@ const UserSchema = new Schema({
   votes: [
     {
       participant: {
+        id: String,
         country: String,
         flag: String,
         artist: String,
