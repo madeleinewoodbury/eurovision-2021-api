@@ -20,7 +20,7 @@ router.post('/:id/:vote', [auth], async (req, res) => {
 
     // Check if user has voted on participant before
     let userVote = await user.votes.find(
-      (vote) => vote.participant.toString() === req.params.id
+      (vote) => vote.participant.id === req.params.id
     )
 
     // Update the new vote
