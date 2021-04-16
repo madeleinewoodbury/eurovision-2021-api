@@ -23,8 +23,10 @@ const UserSchema = new Schema({
   votes: [
     {
       participant: {
-        type: Schema.Types.ObjectId,
-        ref: 'participants',
+        country: String,
+        flag: String,
+        artist: String,
+        song: String,
       },
       vote: {
         type: Number,
