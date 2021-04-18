@@ -7,7 +7,6 @@ const dotenv = require('dotenv')
 dotenv.config({ path: './config/config.env' })
 
 // Load models
-const Country = require('./models/Country')
 const Participant = require('./models/Participant')
 
 // Connect to databse
@@ -18,11 +17,6 @@ mongoose.connect(process.env.MONGO_URI, {
   useUnifiedTopology: true,
 })
 
-// Read JSON files
-const countries = JSON.parse(
-  fs.readFileSync(`${__dirname}/_data/countries.json`, 'utf-8')
-)
-
 const participants = JSON.parse(
   fs.readFileSync(`${__dirname}/_data/participants.json`, 'utf-8')
 )
@@ -30,7 +24,6 @@ const participants = JSON.parse(
 // Import to database
 const importData = async () => {
   try {
-    await Country.create(countries)
     await Participant.create(participants)
     console.log('Data Imported...'.green.inverse)
     process.exit()
@@ -42,7 +35,6 @@ const importData = async () => {
 // Delete data
 const deleteData = async () => {
   try {
-    await Country.deleteMany()
     await Participant.deleteMany()
     console.log('Data Destroyed...'.red.inverse)
     process.exit()

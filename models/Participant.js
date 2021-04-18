@@ -3,6 +3,10 @@ const Schema = mongoose.Schema
 
 const ParticipantSchema = new Schema({
   country: {
+    _id: {
+      type: String,
+      required: true,
+    },
     name: {
       type: String,
       required: true,
@@ -27,12 +31,12 @@ const ParticipantSchema = new Schema({
     type: String,
   },
   bio: {
+    type: Array,
+  },
+  lyrics: {
     type: String,
   },
-  writtenBy: {
-    type: String,
-  },
-  composedBy: {
+  music: {
     type: String,
   },
   semifinal: {
