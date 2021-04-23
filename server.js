@@ -3,6 +3,10 @@ const dotenv = require('dotenv')
 const cors = require('cors')
 const morgan = require('morgan')
 const colors = require('colors')
+const mongoSanitize = require('express-mongo-sanitize')
+const helmet = require('helmet')
+const xss = require('xss-clean')
+const hpp = require('hpp')
 
 const connectDB = require('./config/db')
 
@@ -36,6 +40,18 @@ app.use('/api/votes', require('./routes/votes'))
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'))
 }
+
+// Sanitize data
+app.use(mongoSanitize())
+
+// Set security headers
+app.use(helmet())
+
+// Prevent XSS attacks
+app.use(xss())
+
+// Prevent http param pollution
+app.use(hpp())
 
 const PORT = process.env.PORT
 const server = app.listen(PORT, () => {
